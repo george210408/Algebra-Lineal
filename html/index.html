@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Álgebra Lineal · Gauss-Jordan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="board">
+
+  <header class="board__header">
+    <div class="board__title">
+      <span class="board__chalk-mark" aria-hidden="true">∴</span>
+      <div>
+        <h1>Álgebra Lineal</h1>
+        <p>Eliminación de Gauss-Jordan &amp; método de la matriz inversa</p>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Secciones">
+      <button class="tabs__btn is-active" data-tab="operaciones" role="tab" aria-selected="true">Operaciones</button>
+      <button class="tabs__btn" data-tab="vectores" role="tab" aria-selected="false">Vectores</button>
+      <button class="tabs__btn" data-tab="gauss" role="tab" aria-selected="false">Gauss-Jordan</button>
+      <button class="tabs__btn" data-tab="grupo5" role="tab" aria-selected="false">Método Gauss</button>
+      <button class="tabs__btn" data-tab="convertidores" role="tab" aria-selected="false">Convertidores de Sistemas Numéricos</button>
+      <button class="tabs__btn" data-tab="inversa" role="tab" aria-selected="false">Matriz inversa <span class="tabs__hint">(reversible)</span></button>
+    </nav>
+  </header>
+
+  <main class="layout">
+
+    <!-- ===================== BANCO DE MATRICES ===================== -->
+    <section class="bank" aria-label="Banco de matrices">
+      <div class="bank__head">
+        <h2>Banco de matrices</h2>
+        <p class="bank__count" id="bank-count">Calculando capacidad según tu dispositivo…</p>
+        <button id="btn-new-matrix" class="btn btn--accent">+ Nueva matriz</button>
+      </div>
+      <p class="bank__empty" id="bank-empty">Todavía no has creado ninguna matriz.</p>
+      <ul class="bank__list" id="bank-list"></ul>
+    </section>
+
+    <!-- ===================== PANEL: VECTORES Rn ===================== -->
+    <section class="panel" id="panel-vectores" aria-label="Operaciones con Vectores">
+      <h2 class="panel__title">Vectores</h2>
+      <p class="panel__desc">Realiza operaciones básicas entre vectores y verifica si un vector es combinación lineal de un conjunto dado.</p>
+
+      <div class="converter-grid">
+        <!-- Operaciones Básicas -->
+        <div class="converter-card">
+          <h3>Operaciones Básicas</h3>
+          <label class="field">
+            Vector U (separado por comas)
+            <input type="text" id="vec-u" placeholder="p. ej. 1, 2, 3">
+          </label>
+          <label class="field">
+            Vector V (separado por comas)
+            <input type="text" id="vec-v" placeholder="p. ej. 4, 5, 6">
+          </label>
+          <label class="field">
+            Escalar k
+            <input type="number" id="vec-k" value="2">
+          </label>
+          <div class="btn-row">
+            <button class="btn" data-vec-op="sumar">U + V</button>
+            <button class="btn" data-vec-op="restar">U − V</button>
+            <button class="btn" data-vec-op="escalar">k * U</button>
+          </div>
+          <div id="vec-op-result" class="result-small" hidden>
+            <span class="res-label">Resultado:</span> <span class="res-val mono"></span>
+          </div>
+        </div>
+
+        <!-- Combinación Lineal -->
+        <div class="converter-card">
+          <h3>Combinación Lineal</h3>
+          <label class="field">
+            Vector b (objetivo)
+            <input type="text" id="vec-b" placeholder="p. ej. 7, 8, 9">
+          </label>
+          <label class="field">
+            Vectores {v1, v2...} (separados por punto y coma)
+            <input type="text" id="vec-set" placeholder="1,2,3 ; 4,5,6">
+          </label>
+          <div class="btn-row">
+            <button id="vec-check-cl" class="btn btn--accent">Verificar Combinación</button>
+          </div>
+          <div id="vec-cl-result" class="result-small" hidden>
+            <span class="res-label">Resultado:</span> <span class="res-val mono"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FORMULARIO: NUEVA MATRIZ ===================== -->
+    <div class="modal" id="modal-new" hidden>
+      <div class="modal__card">
+        <div class="modal__head">
+          <h3>Nueva matriz</h3>
+          <button class="modal__close" data-close="modal-new" aria-label="Cerrar">✕</button>
+        </div>
+        <div class="modal__body">
+          <label class="field">
+            Nombre (opcional)
+            <input type="text" id="new-name" placeholder="p. ej. Sistema 1">
+          </label>
+          <div class="field-row">
+            <label class="field">
+              Filas
+              <input type="number" id="new-rows" min="1" max="8" value="3">
+            </label>
+            <label class="field">
+              Columnas
+              <input type="number" id="new-cols" min="1" max="9" value="4">
+            </label>
+          </div>
+          <button id="btn-build-grid" class="btn">Generar cuadrícula</button>
+          <div id="new-grid-wrap"></div>
+          <button id="btn-save-matrix" class="btn btn--accent" hidden>Crear matriz</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== FORMULARIO: EDITAR MATRIZ ===================== -->
+    <div class="modal" id="modal-edit" hidden>
+      <div class="modal__card">
+        <div class="modal__head">
+          <h3 id="edit-title">Editar matriz</h3>
+          <button class="modal__close" data-close="modal-edit" aria-label="Cerrar">✕</button>
+        </div>
+        <div class="modal__body">
+          <p class="hint">Cambia cualquier valor y guarda para actualizar la matriz.</p>
+          <div id="edit-grid-wrap"></div>
+          <button id="btn-save-edit" class="btn btn--accent">Guardar cambios</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== PANEL: OPERACIONES ===================== -->
+    <section class="panel is-active" id="panel-operaciones" aria-label="Operaciones entre matrices">
+      <h2 class="panel__title">Suma, resta y multiplicación</h2>
+      <p class="panel__desc">Elige dos matrices del banco para operarlas. La suma y la resta requieren el mismo tamaño; la multiplicación requiere que las columnas de A coincidan con las filas de B.</p>
+
+      <div class="field-row">
+        <label class="field">
+          Matriz A
+          <select id="op-select-a"></select>
+        </label>
+        <label class="field">
+          Matriz B
+          <select id="op-select-b"></select>
+        </label>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" data-op="sumar">A + B</button>
+        <button class="btn" data-op="restar">A − B</button>
+        <button class="btn" data-op="multiplicar">A × B</button>
+      </div>
+
+      <div id="op-error" class="alert alert--error" hidden></div>
+      <div id="op-result" class="result" hidden>
+        <h3>Resultado</h3>
+        <div id="op-result-grid" class="grid-display"></div>
+        <button id="op-save-result" class="btn btn--ghost">Guardar en el banco</button>
+      </div>
+    </section>
+
+    <!-- ===================== PANEL: CONVERTIDORES ===================== -->
+    <section class="panel" id="panel-convertidores" aria-label="Convertidores de sistemas numéricos">
+      <h2 class="panel__title">Convertidores de Sistemas Numéricos</h2>
+      <p class="panel__desc">Convierte números entre los sistemas decimal, binario, octal y hexadecimal utilizando algoritmos aritméticos fundamentales.</p>
+
+      <div class="converter-grid">
+        <div class="converter-card">
+          <h3>Decimal a Base</h3>
+          <label class="field">
+            Número Decimal
+            <input type="number" id="conv-dec-in" placeholder="p. ej. 13">
+          </label>
+          <div class="btn-row">
+            <button class="btn" data-conv="dec-bin">→ Binario</button>
+            <button class="btn" data-conv="dec-oct">→ Octal</button>
+            <button class="btn" data-conv="dec-hex">→ Hex</button>
+          </div>
+          <div id="conv-dec-out" class="result-small" hidden>
+            <span class="res-label">Resultado:</span> <span class="res-val mono"></span>
+          </div>
+        </div>
+
+        <div class="converter-card">
+          <h3>Base a Decimal</h3>
+          <label class="field">
+            Número en Base
+            <input type="text" id="conv-base-in" placeholder="p. ej. 1101">
+          </label>
+          <div class="btn-row">
+            <button class="btn" data-conv="bin-dec">Binario → Dec</button>
+            <button class="btn" data-conv="oct-dec">Octal → Dec</button>
+            <button class="btn" data-conv="hex-dec">Hex → Dec</button>
+          </div>
+          <div id="conv-base-out" class="result-small" hidden>
+            <span class="res-label">Resultado:</span> <span class="res-val mono"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PANEL: MÉTODO GAUSS ===================== -->
+    <section class="panel" id="panel-grupo5" aria-label="Resolver por Método Gauss">
+      <h2 class="panel__title">Método de Gauss</h2>
+      <p class="panel__desc">Implementación basada en la eliminación hacia adelante y sustitución regresiva. Clasifica el sistema y obtiene la solución única si existe.</p>
+
+      <label class="field field--wide">
+        Matriz aumentada
+        <select id="g5-select"></select>
+      </label>
+
+      <div class="btn-row">
+        <button id="g5-solve" class="btn btn--accent">Resolver Sistema</button>
+        <button id="g5-reset" class="btn btn--ghost" hidden>Reiniciar</button>
+      </div>
+
+      <div id="g5-error" class="alert alert--error" hidden></div>
+
+      <div id="g5-steps" class="steps" hidden></div>
+
+      <div id="g5-result" class="result" hidden>
+        <h3 id="g5-classification">Clasificación</h3>
+        <div id="g5-solution-body"></div>
+      </div>
+    </section>
+
+    <!-- ===================== PANEL: VECTORES Rn ===================== -->
+    <section class="panel" id="panel-vectores" aria-label="Operaciones con Vectores">
+      <h2 class="panel__title">Vectores</h2>
+      <p class="panel__desc">Realiza operaciones básicas entre vectores y verifica si un vector es combinación lineal de un conjunto dado.</p>
+
+      <div class="converter-grid">
+        <!-- Operaciones Básicas -->
+        <div class="converter-card">
+          <h3>Operaciones Básicas</h3>
+          <label class="field">
+            Vector U (separado por comas)
+            <input type="text" id="vec-u" placeholder="p. ej. 1, 2, 3">
+          </label>
+          <label class="field">
+            Vector V (separado por comas)
+            <input type="text" id="vec-v" placeholder="p. ej. 4, 5, 6">
+          </label>
+          <label class="field">
+            Escalar k
+            <input type="number" id="vec-k" value="2">
+          </label>
+          <div class="btn-row">
+            <button class="btn" data-vec-op="sumar">U + V</button>
+            <button class="btn" data-vec-op="restar">U − V</button>
+            <button class="btn" data-vec-op="escalar">k * U</button>
+          </div>
+          <div id="vec-op-result" class="result-small" hidden>
+            <span class="res-label">Resultado:</span> <span class="res-val mono"></span>
+          </div>
+        </div>
+
+        <!-- Combinación Lineal -->
+        <div class="converter-card">
+          <h3>Combinación Lineal</h3>
+          <label class="field">
+            Vector b (objetivo)
+            <input type="text" id="vec-b" placeholder="p. ej. 7, 8, 9">
+          </label>
+          <label class="field">
+            Vectores {v1, v2...} (separados por punto y coma)
+            <input type="text" id="vec-set" placeholder="1,2,3 ; 4,5,6">
+          </label>
+          <div class="btn-row">
+            <button id="vec-check-cl" class="btn btn--accent">Verificar Combinación</button>
+          </div>
+          <div id="vec-cl-result" class="result-small" hidden>
+            <span class="res-label">Resultado:</span> <span class="res-val mono"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PANEL: GAUSS-JORDAN ===================== -->
+    <section class="panel" id="panel-gauss" aria-label="Resolver por Gauss-Jordan">
+      <h2 class="panel__title">Resolver un sistema por Gauss-Jordan</h2>
+      <p class="panel__desc">Selecciona una matriz aumentada [A | b]. Cada paso se registra tal como lo haría alguien resolviendo a mano: intercambios de fila, normalización del pivote y eliminación.</p>
+
+      <label class="field field--wide">
+        Matriz aumentada
+        <select id="gauss-select"></select>
+      </label>
+
+      <div class="btn-row">
+        <button id="gauss-solve" class="btn btn--accent">Resolver paso a paso</button>
+        <button id="gauss-reset" class="btn btn--ghost" hidden>Reiniciar</button>
+      </div>
+
+      <div id="gauss-error" class="alert alert--error" hidden></div>
+
+      <div id="gauss-steps" class="steps" hidden></div>
+
+      <div class="btn-row" id="gauss-controls" hidden>
+        <button id="gauss-prev" class="btn btn--ghost">← Paso anterior</button>
+        <span id="gauss-progress" class="steps__progress"></span>
+        <button id="gauss-next" class="btn btn--ghost">Paso siguiente →</button>
+        <button id="gauss-all" class="btn btn--ghost">Ver todos los pasos</button>
+      </div>
+
+      <div id="gauss-solution" class="result" hidden>
+        <h3 id="gauss-solution-title">Solución</h3>
+        <div id="gauss-solution-body"></div>
+      </div>
+    </section>
+
+    <!-- ===================== PANEL: MATRIZ INVERSA ===================== -->
+    <section class="panel" id="panel-inversa" aria-label="Método de la matriz inversa">
+      <h2 class="panel__title">Método de la matriz inversa <span class="tabs__hint">(reversible)</span></h2>
+      <p class="panel__desc">Este método resuelve <span class="mono">Ax = b</span> calculando <span class="mono">A⁻¹</span> mediante Gauss-Jordan sobre <span class="mono">[A | I]</span>, y luego <span class="mono">x = A⁻¹b</span>. Es "reversible" porque cada operación de fila puede deshacerse: al final se verifica que <span class="mono">A · A⁻¹ = I</span>.</p>
+
+      <label class="field field--wide">
+        Matriz cuadrada A
+        <select id="inv-select"></select>
+      </label>
+
+      <div id="inv-b-wrap" class="field--wide" hidden>
+        <span class="field__label">Vector de términos independientes b</span>
+        <div id="inv-b-inputs" class="b-inputs"></div>
+      </div>
+
+      <div class="btn-row">
+        <button id="inv-solve" class="btn btn--accent">Calcular A⁻¹ y resolver</button>
+        <button id="inv-reset" class="btn btn--ghost" hidden>Reiniciar</button>
+      </div>
+
+      <div id="inv-error" class="alert alert--error" hidden></div>
+
+      <div id="inv-steps" class="steps" hidden></div>
+
+      <div class="btn-row" id="inv-controls" hidden>
+        <button id="inv-prev" class="btn btn--ghost">← Paso anterior</button>
+        <span id="inv-progress" class="steps__progress"></span>
+        <button id="inv-next" class="btn btn--ghost">Paso siguiente →</button>
+        <button id="inv-all" class="btn btn--ghost">Ver todos los pasos</button>
+      </div>
+
+      <div id="inv-result" class="result" hidden>
+        <h3>Matriz inversa A⁻¹</h3>
+        <div id="inv-inverse-grid" class="grid-display"></div>
+
+        <h3>Verificación A · A⁻¹ = I</h3>
+        <div id="inv-check-grid" class="grid-display"></div>
+
+        <h3>Solución x = A⁻¹b</h3>
+        <div id="inv-solution-body"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="board__footer">
+    <p>Adaptado de <span class="mono">gaussjordan.py</span> — crea matrices, opéralas y resuélvelas sin salir del navegador.</p>
+  </footer>
+
+</div>
+
+<script src="../js/script.js"></script>
+</body>
+</html>
