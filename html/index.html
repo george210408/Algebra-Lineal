@@ -3,11 +3,10 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Análisis Matricial Pro · Gauss-Jordan</title>
+	<title>LINEARX · Análisis Matricial Pro</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="../css/style.css">
-	<script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.28/build/spline-viewer.js"></script>
 </head>
 <body>
 	<div class="spotlight-bg"></div>
@@ -15,98 +14,195 @@
 	<div class="board">
 	  <header class="board__header">
 	    <div class="board__title">
-	      <span class="board__chalk-mark" aria-hidden="true">∴</span>
-	      <div>
-	        <h1>Sistemas Lineales</h1>
-	        <p>Diagnóstico Automático de Matrices y Herramientas de Álgebra</p>
+	      <div class="brand-logo">LINEARX</div>
+	      <div style="margin-left: 20px;">
+	        <h1 id="main-title">Sistemas Lineales</h1>
+	        <p id="main-subtitle">Diagnóstico Automático de Matrices y Herramientas de Álgebra</p>
 	      </div>
 	    </div>
 	  </header>
 
 	  <main class="analysis-container">
-	    <!-- SECCIÓN 1: MATRIZ PRINCIPAL -->
-	    <section class="input-panel">
-	      <h2 style="color: var(--neon-cyan); margin-bottom: 20px; font-family: var(--mono);">Calculadora de Matrices</h2>
-	      <div class="config-row">
-	        <div class="field">
-	          <label>Filas</label>
-	          <input type="number" id="rows-in" min="1" max="10" value="3">
-	        </div>
-	        <div class="field">
-	          <label>Columnas</label>
-	          <input type="number" id="cols-in" min="1" max="12" value="4">
-	        </div>
-	        <button id="btn-generate" class="btn btn--accent">Generar Matriz</button>
-	      </div>
 
-	      <div id="matrix-wrap" class="matrix-wrap" hidden>
-	        <div id="matrix-grid" class="matrix-grid"></div>
-	        <button id="btn-analyze" class="btn btn--accent btn-large">🚀 Analizar Matriz</button>
+	    <!-- VISTA 1: MENÚ PRINCIPAL -->
+	    <section id="view-menu" class="view-container">
+	      <div class="menu-grid">
+	        <div class="menu-card" onclick="switchView('view-matrix')">
+	          <div class="menu-card__icon">📐</div>
+	          <h3>Análisis de Matrices</h3>
+	          <p>Resolución por Gauss-Jordan, Clasificación y Matriz Inversa</p>
+	        </div>
+	        <div class="menu-card" onclick="switchView('view-vectors')">
+	          <div class="menu-card__icon">↗️</div>
+	          <h3>Operaciones con Vectores</h3>
+	          <p>Suma, Resta y Multiplicación Escalar en Rn</p>
+	        </div>
+	        <div class="menu-card" onclick="switchView('view-converter')">
+	          <div class="menu-card__icon">🔢</div>
+	          <h3>Convertidor de Bases</h3>
+	          <p>Conversiones Binario, Octal y Hexadecimal con procedimiento</p>
+	        </div>
 	      </div>
 	    </section>
 
-	    <!-- SECCIÓN 2: HERRAMIENTAS ADICIONALES (VECTORES Y BASES) -->
-	    <section class="extra-tools-grid">
-	      <!-- Herramientas de Vectores -->
+	    <!-- VISTA 2: MATRIZ PRINCIPAL -->
+	    <section id="view-matrix" class="view-container view-hidden">
+	      <button class="btn btn--back" onclick="switchView('view-menu')">← Volver al Menú</button>
+	      <div class="input-panel">
+	        <h2 style="color: var(--neon-cyan); margin-bottom: 20px; font-family: var(--mono);">Calculadora de Matrices</h2>
+
+	        <div class="matrices-input-container">
+	          <!-- PANEL MATRIZ A -->
+	          <div class="matrix-panel panel-a">
+	            <h4 style="text-align:center; color:var(--neon-cyan); font-family:var(--mono);">Matriz A</h4>
+	            <div class="config-row">
+	              <div class="field">
+	                <label>Filas</label>
+	                <input type="number" id="rows-a" min="1" max="10" value="3">
+	              </div>
+	              <div class="field">
+	                <label>Columnas</label>
+	                <input type="number" id="cols-a" min="1" max="12" value="4">
+	              </div>
+	              <button id="btn-gen-a" class="btn btn--accent">Generar A</button>
+	            </div>
+	            <div id="matrix-wrap-a" class="matrix-wrap" hidden>
+	              <div id="matrix-grid-a" class="matrix-grid"></div>
+	            </div>
+	          </div>
+
+	          <!-- PANEL MATRIZ B -->
+	          <div class="matrix-panel panel-b">
+	            <h4 style="text-align:center; color:var(--neon-purple); font-family:var(--mono);">Matriz B</h4>
+	            <div class="config-row">
+	              <div class="field">
+	                <label>Filas</label>
+	                <input type="number" id="rows-b" min="1" max="10" value="3">
+	              </div>
+	              <div class="field">
+	                <label>Columnas</label>
+	                <input type="number" id="cols-b" min="1" max="12" value="4">
+	              </div>
+	              <button id="btn-gen-b" class="btn btn--accent">Generar B</button>
+	            </div>
+	            <div id="matrix-wrap-b" class="matrix-wrap" hidden>
+	              <div id="matrix-grid-b" class="matrix-grid"></div>
+	            </div>
+	          </div>
+	        </div>
+
+	        <div class="btn-row-center">
+	          <button id="btn-analyze" class="btn btn--accent btn-large">🚀 Analizar A</button>
+	          <button id="btn-add" class="btn btn--accent btn-large">➕ Sumar A+B</button>
+	          <button id="btn-sub" class="btn btn--accent btn-large">➖ Restar A-B</button>
+	          <button id="btn-mul" class="btn btn--accent btn-large">✖️ Multiplicar A*B</button>
+	          <div class="field" style="display: flex; align-items: center; gap: 10px; margin-left: 10px;">
+	            <label>k:</label>
+	            <input type="number" id="matrix-scalar" value="2" style="width: 60px;">
+	            <button id="btn-scalar" class="btn btn--accent">k * A</button>
+	          </div>
+	        </div>
+	      </div>
+
+	      <section id="results-dashboard" class="results-dashboard" hidden>
+	        <div id="res-op-result-card" class="result-card highlight" hidden>
+	          <h2 id="res-op-title">Resultado de la Operación</h2>
+	          <div id="res-op-content" style="display: flex; justify-content: center; margin-top: 20px;"></div>
+	        </div>
+
+	        <div class="result-card highlight">
+	          <h2 id="res-classification">Clasificación del Sistema (A)</h2>
+	          <div id="res-solution" class="solution-body"></div>
+	        </div>
+	        <div class="results-grid">
+	          <div class="result-card">
+	            <h3>Proceso de Reducción (Gauss-Jordan)</h3>
+	            <div id="res-steps" class="steps-container"></div>
+	          </div>
+	          <div class="result-card">
+	            <h3>Análisis de Inversa</h3>
+	            <div id="res-inverse-content"></div>
+	          </div>
+	        </div>
+	      </section>
+	    </section>
+
+	    <!-- VISTA 3: VECTORES -->
+	    <section id="view-vectors" class="view-container view-hidden">
+	      <button class="btn btn--back" onclick="switchView('view-menu')">← Volver al Menú</button>
 	      <div class="tool-card">
 	        <h3 style="color: var(--neon-cyan); font-family: var(--mono); margin-top: 0; border-bottom: 1px solid rgba(0, 242, 255, 0.1); padding-bottom: 10px; margin-bottom: 20px;">Vectores Rn</h3>
 	        <div class="tool-body" style="display: flex; flex-direction: column; gap: 20px;">
-	          <div class="field">
-	            <label>Vector U (separado por comas)</label>
-	            <input type="text" id="vec-u" placeholder="1, 2, 3" style="width: 100%;">
+
+	          <!-- OPERACIONES BÁSICAS -->
+	          <div class="tool-section" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.05);">
+	            <h4 style="color: var(--neon-purple); margin-top: 0; font-family: var(--mono);">Operaciones Básicas</h4>
+	            <div class="field">
+	              <label>Vector U (separado por comas)</label>
+	              <input type="text" id="vec-u" placeholder="1, 2, 3" style="width: 100%;">
+	            </div>
+	            <div class="field">
+	              <label>Vector V (separado por comas)</label>
+	              <input type="text" id="vec-v" placeholder="4, 5, 6" style="width: 100%;">
+	            </div>
+	            <div class="btn-row" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+	              <button class="btn btn--small" data-vec-op="sumar">Suma</button>
+	              <button class="btn btn--small" data-vec-op="restar">Resta</button>
+	              <button class="btn btn--small" data-vec-op="escalar">k * U</button>
+	            </div>
 	          </div>
-	          <div class="field">
-	            <label>Vector V (separado por comas)</label>
-	            <input type="text" id="vec-v" placeholder="4, 5, 6" style="width: 100%;">
+
+	          <!-- COMBINACIÓN LINEAL -->
+	          <div class="tool-section" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.05);">
+	            <h4 style="color: var(--neon-purple); margin-top: 0; font-family: var(--mono);">Combinación Lineal</h4>
+	            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px;">¿Es el vector <b>b</b> una combinación lineal de {v1, v2, ... vk}?</p>
+	            <div class="field">
+	              <label>Vector b (Resultado)</label>
+	              <input type="text" id="vec-b" placeholder="1, 5, 2" style="width: 100%;">
+	            </div>
+	            <div class="field">
+	              <label>Conjunto de Vectores {v1, v2...} (Cada vector en una línea, elementos separados por comas)</label>
+	              <textarea id="vec-set" rows="4" placeholder="1, 0, 1&#10;0, 1, 1&#10;1, 1, 0" style="width: 100%; background: rgba(0,0,0,0.5); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); padding: 10px; font-family: var(--mono);"></textarea>
+	            </div>
+	            <button id="btn-check-comb" class="btn btn--small" style="margin-top: 15px; background: var(--accent-gradient); color: white; border: none;">Evaluar Combinación Lineal</button>
 	          </div>
-	          <div class="btn-row" style="display: flex; gap: 10px; flex-wrap: wrap;">
-	            <button class="btn btn--small" data-vec-op="sumar">Suma</button>
-	            <button class="btn btn--small" data-vec-op="restar">Resta</button>
-	            <button class="btn btn--small" data-vec-op="escalar">k*U</button>
-	          </div>
+
 	          <div id="vec-result" class="result-small" hidden style="margin-top: 10px; padding: 12px; background: rgba(0,0,0,0.4); border-radius: var(--radius-sm); border-left: 3px solid var(--neon-purple); color: var(--neon-cyan); font-family: var(--mono); font-weight: 700;">
 	            <span class="res-val mono"></span>
 	          </div>
 	        </div>
 	      </div>
+	    </section>
 
-	      <!-- Convertidor de Bases -->
+	    <!-- VISTA 4: CONVERTIDOR DE BASES -->
+	    <section id="view-converter" class="view-container view-hidden">
+	      <button class="btn btn--back" onclick="switchView('view-menu')">← Volver al Menú</button>
 	      <div class="tool-card">
-	        <h3 style="color: var(--neon-cyan); font-family: var(--mono); margin-top: 0; border-bottom: 1px solid rgba(0, 242, 255, 0.1); padding-bottom: 10px; margin-bottom: 20px;">Convertidor de Bases</h3>
+	        <h3 style="color: var(--neon-cyan); font-family: var(--mono); margin-top: 0; border-bottom: 1px solid rgba(0, 242, 255, 0.1); padding-bottom: 10px; margin-bottom: 20px;">Convertidor de Bases Pro</h3>
 	        <div class="tool-body" style="display: flex; flex-direction: column; gap: 20px;">
 	          <div class="field">
-	            <label>Número / Base</label>
-	            <input type="text" id="conv-in" placeholder="Ej: 1010 o 12" style="width: 100%;">
+	            <label>Número a convertir</label>
+	            <input type="text" id="conv-in" placeholder="Ej: 1010, 12, FF" style="width: 100%;">
 	          </div>
-	          <div class="btn-row" style="display: flex; gap: 10px; flex-wrap: wrap;">
-	            <button class="btn btn--small" data-conv="dec-bin">Dec→Bin</button>
-	            <button class="btn btn--small" data-conv="bin-dec">Bin→Dec</button>
-	            <button class="btn btn--small" data-conv="dec-hex">Dec→Hex</button>
+	          <div class="field">
+	            <label>Base de Origen $\rightarrow$ Base de Destino</label>
+	            <div class="btn-row" style="display: flex; gap: 10px; flex-wrap: wrap;">
+	              <button class="btn btn--small" data-conv="dec-bin">Dec → Bin</button>
+	              <button class="btn btn--small" data-conv="dec-oct">Dec → Oct</button>
+	              <button class="btn btn--small" data-conv="dec-hex">Dec → Hex</button>
+	              <button class="btn btn--small" data-conv="bin-dec">Bin → Dec</button>
+	              <button class="btn btn--small" data-conv="oct-dec">Oct → Dec</button>
+	              <button class="btn btn--small" data-conv="hex-dec">Hex → Dec</button>
+	            </div>
 	          </div>
 	          <div id="conv-result" class="result-small" hidden style="margin-top: 10px; padding: 12px; background: rgba(0,0,0,0.4); border-radius: var(--radius-sm); border-left: 3px solid var(--neon-purple); color: var(--neon-cyan); font-family: var(--mono); font-weight: 700;">
-	            <span class="res-val mono"></span>
+	            <div class="res-label" style="display:block; margin-bottom:5px; color: var(--text-muted);">Resultado y Procedimiento:</div>
+	            <div class="res-val mono"></div>
 	          </div>
 	        </div>
 	      </div>
 	    </section>
 
-	    <!-- SECCIÓN 3: DASHBOARD DE RESULTADOS -->
-	    <section id="results-dashboard" class="results-dashboard" hidden>
-	      <div class="result-card highlight">
-	        <h2 id="res-classification">Clasificación del Sistema</h2>
-	        <div id="res-solution" class="solution-body"></div>
-	      </div>
-	      <div class="results-grid">
-	        <div class="result-card">
-	          <h3>Proceso de Reducción (Gauss-Jordan)</h3>
-	          <div id="res-steps" class="steps-container"></div>
-	        </div>
-	        <div class="result-card">
-	          <h3>Análisis de Inversa</h3>
-	          <div id="res-inverse-content"></div>
-	        </div>
-	      </div>
-	    </section>
 	  </main>
 
 	  <footer class="board__footer">
