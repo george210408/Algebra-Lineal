@@ -1,8 +1,3 @@
-/* ============================================================
-   ULTIMATE MATRIX ANALYZER ENGINE (PURE JS VERSION)
-   ============================================================ */
-
-// --- VIEW NAVIGATION ---
 function switchView(viewId) {
   document.querySelectorAll('.view-container').forEach(v => v.classList.add('view-hidden'));
   const target = document.getElementById(viewId);
@@ -23,7 +18,6 @@ function fmt(n) {
 
 function cloneMatrix(m) { return m.map(row => row.slice()); }
 
-// --- MATRIX HELPERS ---
 function getMatrixData(gridId) {
   const grid = document.getElementById(gridId);
   if (!grid) return null;
@@ -55,7 +49,6 @@ function showOperationResult(matrix, title) {
   opContent.innerHTML = '';
   opContent.appendChild(renderGrid(matrix));
 
-  // Hide the analysis sections when showing a simple operation result
   const analysisCard = document.querySelector('.result-card.highlight:not(#res-op-result-card)');
   if (analysisCard) analysisCard.style.display = 'none';
   const resultsGrid = document.querySelector('.results-grid');
@@ -73,7 +66,6 @@ function resetDashboard() {
   if (resultsGrid) resultsGrid.style.display = 'grid';
 }
 
-// --- 1. GAUSS-JORDAN ENGINE ---
 function solveGaussJordan(inputMatrix) {
   const m = cloneMatrix(inputMatrix);
   const rows = m.length;
@@ -166,7 +158,6 @@ function calculateInverse(m) {
   return aug.map(row => row.slice(n));
 }
 
-// --- MATRIX MATH ---
 function addMatrices(A, B) {
   if (A.length !== B.length || A[0].length !== B[0].length) return null;
   return A.map((row, i) => row.map((val, j) => val + B[i][j]));
@@ -194,7 +185,6 @@ function scalarMultiplyMatrix(M, k) {
   return M.map(row => row.map(val => val * k));
 }
 
-// --- 2. VECTOR OPS ---
 function handleVectorOp(op) {
   const uStr = document.getElementById('vec-u').value;
   const vStr = document.getElementById('vec-v').value;
@@ -215,8 +205,8 @@ function handleVectorOp(op) {
     if (u.length !== v.length) { alert('Dimensiones distintas'); return; }
     result = u.map((x, i) => x - v[i]);
   } else if (op === 'escalar') {
-    const k = 2;
-    result = u.map(x => x * k);
+    const kVal = 2;
+    result = u.map(x => x * kVal);
   }
 
   if (result) {
@@ -237,15 +227,12 @@ function checkLinearCombination() {
 
   if (!b || vSet.length === 0) { alert('Ingresa el vector b y el conjunto de vectores'); return; }
 
-  // Check that all vectors have the same dimension
   const n = b.length;
   if (vSet.some(v => v.length !== n)) {
     alert('Todos los vectores deben tener la misma dimensión que el vector b');
     return;
   }
 
-  // Build Augmented Matrix [V | b]
-  // V is matrix where columns are v1, v2... vk
   const rows = n;
   const cols = vSet.length + 1;
   const matrix = Array.from({ length: rows }, () => new Array(cols).fill(0));
@@ -270,7 +257,6 @@ function checkLinearCombination() {
   resDiv.hidden = false;
 }
 
-// --- 3. NUMERICAL CONVERSION ---
 function handleConversion(type) {
   const input = document.getElementById('conv-in').value.trim();
   const resDiv = document.getElementById('conv-result');
@@ -334,11 +320,9 @@ function handleConversion(type) {
     resVal.innerHTML = `<strong>${resultText}</strong><br><br>${procedure}`;
     resDiv.hidden = false;
   } catch (e) {
-    alert(e.message);
   }
 }
 
-// --- UI INTEGRATION ---
 function generateMatrix(id) {
   const rows = parseInt(document.getElementById(id === 'a' ? 'rows-a' : 'rows-b').value);
   const cols = parseInt(document.getElementById(id === 'a' ? 'cols-a' : 'cols-b').value);
@@ -455,15 +439,8 @@ function renderGrid(data) {
   return wrapper;
 }
 
-document.getElementById('btn-scalar').addEventListener('click', () => {
-  const A = getMatrixData('matrix-grid-a');
-  if (!A) { alert('Primero genera la Matriz A'); return; }
-
-  const k = parseFloat(document.getElementById('matrix-scalar').value);
-  if (isNaN(k)) { alert('Ingresa un valor válido para k'); return; }
-
-  const res = scalarMultiplyMatrix(A, k);
-  showOperationResult(res, `Resultado de Multiplicación Escalar (${k} * A)`);
+document.querySelectorAll('[data-vec-op]').forEach(btn => {
+  btn.addEventListener('click', () => handleVectorOp(btn.dataset.vecOp));
 });
 
 document.querySelectorAll('[data-conv]').forEach(btn => {

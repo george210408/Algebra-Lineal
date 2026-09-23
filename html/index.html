@@ -24,7 +24,6 @@
 
 	  <main class="analysis-container">
 
-	    <!-- VISTA 1: MENÚ PRINCIPAL -->
 	    <section id="view-menu" class="view-container">
 	      <div class="menu-grid">
 	        <div class="menu-card" onclick="switchView('view-matrix')">
@@ -45,14 +44,12 @@
 	      </div>
 	    </section>
 
-	    <!-- VISTA 2: MATRIZ PRINCIPAL -->
 	    <section id="view-matrix" class="view-container view-hidden">
 	      <button class="btn btn--back" onclick="switchView('view-menu')">← Volver al Menú</button>
 	      <div class="input-panel">
 	        <h2 style="color: var(--neon-cyan); margin-bottom: 20px; font-family: var(--mono);">Calculadora de Matrices</h2>
 
 	        <div class="matrices-input-container">
-	          <!-- PANEL MATRIZ A -->
 	          <div class="matrix-panel panel-a">
 	            <h4 style="text-align:center; color:var(--neon-cyan); font-family:var(--mono);">Matriz A</h4>
 	            <div class="config-row">
@@ -71,7 +68,6 @@
 	            </div>
 	          </div>
 
-	          <!-- PANEL MATRIZ B -->
 	          <div class="matrix-panel panel-b">
 	            <h4 style="text-align:center; color:var(--neon-purple); font-family:var(--mono);">Matriz B</h4>
 	            <div class="config-row">
@@ -127,14 +123,12 @@
 	      </section>
 	    </section>
 
-	    <!-- VISTA 3: VECTORES -->
 	    <section id="view-vectors" class="view-container view-hidden">
 	      <button class="btn btn--back" onclick="switchView('view-menu')">← Volver al Menú</button>
 	      <div class="tool-card">
 	        <h3 style="color: var(--neon-cyan); font-family: var(--mono); margin-top: 0; border-bottom: 1px solid rgba(0, 242, 255, 0.1); padding-bottom: 10px; margin-bottom: 20px;">Vectores Rn</h3>
 	        <div class="tool-body" style="display: flex; flex-direction: column; gap: 20px;">
 
-	          <!-- OPERACIONES BÁSICAS -->
 	          <div class="tool-section" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.05);">
 	            <h4 style="color: var(--neon-purple); margin-top: 0; font-family: var(--mono);">Operaciones Básicas</h4>
 	            <div class="field">
@@ -152,7 +146,6 @@
 	            </div>
 	          </div>
 
-	          <!-- COMBINACIÓN LINEAL -->
 	          <div class="tool-section" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.05);">
 	            <h4 style="color: var(--neon-purple); margin-top: 0; font-family: var(--mono);">Combinación Lineal</h4>
 	            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px;">¿Es el vector <b>b</b> una combinación lineal de {v1, v2, ... vk}?</p>
@@ -174,11 +167,10 @@
 	      </div>
 	    </section>
 
-	    <!-- VISTA 4: CONVERTIDOR DE BASES -->
 	    <section id="view-converter" class="view-container view-hidden">
 	      <button class="btn btn--back" onclick="switchView('view-menu')">← Volver al Menú</button>
 	      <div class="tool-card">
-	        <h3 style="color: var(--neon-cyan); font-family: var(--mono); margin-top: 0; border-bottom: 1px solid rgba(0, 242, 255, 0.1); padding-bottom: 10px; margin-bottom: 20px;">Convertidor de Bases Pro</h3>
+	        <h3 style="color: var(--neon-cyan); font-family: var(--mono); margin-top: 0; border-bottom: 1px solid rgba(0, 242, 255, 0.1); padding-bottom: 10px; margin-bottom: 20px;">Convertidor de Bases</h3>
 	        <div class="tool-body" style="display: flex; flex-direction: column; gap: 20px;">
 	          <div class="field">
 	            <label>Número a convertir</label>
